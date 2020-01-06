@@ -14,19 +14,26 @@ window.onload = function () {
 const CL = true
 const monObject = {}
 // data
+const MePage = {
+    my: 50,
+    mx: 50,
+    marge: 2,
+    cs_x: 50,
+    cs_y: 50,
+    mx: 100, // px marge top
+    my: 100 // px marge left
+}
 monObject.mydata = {
     Arbol: document.body,
     compteur: 0,
+
     myId: 1,
     contenu: 'Hello',
     bgcolor: '',
-    cs_x: 50,
-    cs_y: 50,
     HoverCaseSize: 1.5,
-    mx: 25, // px marge top
-    my: 25, // px marge left
     mescases: []
 }
+
 // Methods with a litle BIG Hand from my friend
 monObject.ParsingBody = function(o, CurrentNode, x, y) {
 
@@ -50,8 +57,8 @@ monObject.ParsingBody = function(o, CurrentNode, x, y) {
 
     data.mescases.push({   
             // données de placement x, y & affichage
-            x:              x * data.cs_x, 
-            y:              y * data.cs_y,
+            x:              x * MePage.cs_x, 
+            y:              y * MePage.cs_y,
             id:             data.compteur,
             BgColor:        monObject.tags[CurrentNode.nodeName].bgcolor,
             // données de retour d'info
@@ -66,15 +73,20 @@ monObject.ParsingBody = function(o, CurrentNode, x, y) {
 };   
 // Methods --------------------------- A CLEAN + --------------------------------------
 monObject.RemakeBody = function(domdubody) { 
+
+
     for (let i = 0; i < domdubody.length; i++) {
+        let margex = ((domdubody[i].x/MePage.cs_x)*MePage.marge)
+        let margey = ((domdubody[i].y/MePage.cs_y)*MePage.marge)
+
         // div en absolute dans le div DivSolo qui est en display:inline-block
         let DivSolo = document.createElement('div')
         DivSolo.id = 'Arbol_item' + '_' + i
         DivSolo.myownid = i
         DivSolo.className = 'Arbol_item'
-        DivSolo.style.left = domdubody[i].x + 'px'
-        DivSolo.style.top = domdubody[i].y + 'px'
-        // --------------------------------------------------------- -------------------------------------------------- -------------------------------------------------------/
+        DivSolo.style.left =  margex + MePage.mx + domdubody[i].x + 'px'
+        DivSolo.style.top =  margey + MePage.my + domdubody[i].y + 'px'
+        // ---------------------------------------------------------
         let DivPopup = document.createElement('div')   
         DivPopup.id = 'Arbol_popup' + '_' + i
         DivPopup.className = 'Arbol_popup'
@@ -228,10 +240,10 @@ monObject.InjectionCss = function() {
     let Moncss = document.createElement('style')                                                                                        // methode css dans le header !
     Moncss.type = 'text/css'  
         let css =  '#ArtbolTree{z-index:'+charte.z_index+';}'      // je voulais pas me prendre la tete avec les events addEventListener ;(
-            css += '.Arbol_item{position:absolute;width:'+monObject.mydata.cs_x+'px;height:'+monObject.mydata.cs_y+'px;}'
+            css += '.Arbol_item{position:absolute;width:'+MePage.cs_x+'px;height:'+MePage.cs_y+'px;}'
             css += '.Arbol_popup{display:flex;justify-content:center;text-align:center;align-items:top;cursor:pointer;'
                 css += 'overflow:hidden;'
-                css += 'width:'+(monObject.mydata.cs_x-(charte.CellBorder*2))+'px;height:'+(monObject.mydata.cs_x-(charte.CellBorder*2))+'px;'
+                css += 'width:'+(MePage.cs_x-(charte.CellBorder*2))+'px;height:'+(MePage.cs_x-(charte.CellBorder*2))+'px;'
                 css += 'font-size:'+charte.RatioTypo+'px}'
             css += '.Arbol_popup:hover{z-index:'+(charte.z_index+1)+';'
                 css += 'transition: '+charte.poptimehover+'s cubic-bezier(0, 0, 0, '+charte.rationhovercases+');transform: scale(2.5);align-text:center;'
@@ -296,6 +308,15 @@ monObject.InjectionFooter = function() {
                                     console.groupEnd()
                                     // STOP ICI
                                     //console.log(xhr.responseText[0])
+
+
+
+
+
+
+
+
+
                                 var objdOm = JSON.parse(xhr.responseText) // << bug
                                 var zeBody= objdOm.body
                                 var NewBody = zeBody.children
@@ -303,6 +324,10 @@ monObject.InjectionFooter = function() {
                                 // je creuse https://stackoverflow.com/questions/24546483/how-to-get-data-field-from-xhr-responsetext
                                 // je creuse https://stackoverflow.com/questions/56694946/how-can-i-parse-an-html-response-text-of-an-xmlhttprequest-using-js
                                 // je creuse https://developer.mozilla.org/fr/docs/Web/API/XMLHttpRequest/response
+
+                                //  encore https://expressjs.com/en/resources/middleware/body-parser.html
+                                // https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/JSON/parse
+                                // https://stackoverflow.com/questions/24202628/parsing-json-response-to-get-body-from-html
                             break;
                             case 404 :
                                 console.log('404 ! Sans dec...')
@@ -473,8 +498,4 @@ monObject.tags = {
     VAR:        {type: 'var',bgcolor:'rgba(250,5,122,'+charte.transp+')',color:'rgba(0,0,255,.5)',contenu:'var',bgcolor:'rgba(5,250,133,'+charte.transp+')'},
     VIDEO:      {type: 'video',bgcolor:'rgba(252,2,380,'+charte.transp+')',color:'rgba(0,0,255,.5)',contenu:'video<br>new',bgcolor:'rgba(3,253,-125,'+charte.transp+')'},
     WBR:        {type: 'wbr',bgcolor:'rgba(255,0,127,'+charte.transp+')',color:'rgba(0,0,255,.5)',contenu:'wbr<br>new',bgcolor:'rgba(0,255,128,'+charte.transp+')'}
-
-
-
-
 }
