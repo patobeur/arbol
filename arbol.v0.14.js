@@ -2,8 +2,10 @@
 window.onload = function () {
     monObject.Arbol = document.body.children
     monObject.ParsingBody(0,document.body,0,0);
+
     document.head.prepend(monObject.InjectionCss())
-    document.body.prepend(monObject.injectionhtml('Ici, vous etes en absolu ! Abandonnez tout espoirs relatifs'));
+    document.body.prepend(monObject.injectionhtml());
+
     monObject.RemakeBody(monObject.mydata.mescases)
     monObject.InjectionFullScreen()
     monObject.InjectionFooter()
@@ -11,17 +13,15 @@ window.onload = function () {
     //console.log(monObject.mydata.mescases);
 }
 // L'Objet
-const CL = true
+const CL = false
 const monObject = {}
 // data
 const MePage = {
-    my: 50,
-    mx: 50,
-    marge: 2,
+    marge: 8,
     cs_x: 50,
     cs_y: 50,
-    mx: 100, // px marge top
-    my: 100 // px marge left
+    mx: 60, // px marge top
+    my: 60 // px marge left
 }
 monObject.mydata = {
     Arbol: document.body,
@@ -30,7 +30,7 @@ monObject.mydata = {
     myId: 1,
     contenu: 'Hello',
     bgcolor: '',
-    HoverCaseSize: 1.5,
+    HoverCaseSize: 3,
     mescases: []
 }
 
@@ -53,6 +53,7 @@ monObject.ParsingBody = function(o, CurrentNode, x, y) {
         if (CurrentNode.children.length>0)
             {texte += '<br>' + CurrentNode.children.length +' childs'}
             else {texte += '<br>' + 'No childs !'}
+        if (CL) console.log(CurrentNode.nodeName)
         texte += '<br>' + '[' + monObject.tags[CurrentNode.nodeName].contenu + ']'
 
     data.mescases.push({   
@@ -67,7 +68,7 @@ monObject.ParsingBody = function(o, CurrentNode, x, y) {
             NodeName:       CurrentNode.nodeName,
             NbChild:        CurrentNode.children.length,
             // contenu à mettre dans la case
-            texte:          texte //monObject.tags[CurrentNode.nodeName].contenu// + CurrentNode.id + '<br> i:' + o + ',width:' + width+ '<br> childs:'+CurrentNode.children.length
+            texte:          texte
     }) 
     return  width;                   
 };   
@@ -171,17 +172,19 @@ const treeDiv = {
     styleAlignItems: 'center'
 }
 // ----------------------------------------------- REDUIRE +
-monObject.injectionhtml = function(unpaquet='') {
-    let killerdiv = document.querySelector('ArbolTree')
-    if (killerdiv) killerdiv.remove()
+monObject.injectionhtml = function() {
+    // let killerdiv = document.querySelector('ArbolTree')
+    // if (killerdiv) killerdiv.remove()
     
     var ArbolTree = document.createElement('div') // div surcouche dans le quel on mettra le cadre
     ArbolTree.id = 'ArbolTree'
+
         tools.injection(arbolTreeData,ArbolTree);
 
     var TreeDiv = document.createElement('div')
     TreeDiv.id = 'TreeDiv'
-    tools.injection(treeDiv,TreeDiv);
+
+        tools.injection(treeDiv,TreeDiv);
     
     ArbolTree.prepend(TreeDiv) 
     return ArbolTree 
@@ -213,8 +216,8 @@ const charte = {
     inputid: 'urlArbol',
     inputclass: 'urlinput',
     placeholder: 'index.html',
-    // inputdefaultvalue: window.location.pathname,
-    inputdefaultvalue: window.location.href,
+    inputdefaultvalue: 'https://google.fr',
+    // inputdefaultvalue: window.location.href,
     submitid: 'SubArbol',
     submitclass: 'subinput',
     submitinner: 'GET',
@@ -290,24 +293,36 @@ monObject.InjectionFooter = function() {
         'click',
         function soumission(e){
             var FormUrlInput = document.querySelector('#'+charte.inputid)
-            console.log(charte.inputid)
+            // if (CL) console.log(charte.inputid)
             // patch secu needed to reg(FormUrlInput)
             if (FormUrlInput.value && FormUrlInput.value!='') {
                 console.log('Go xhr avec : ' + FormUrlInput.value)
-                var xhr = new XMLHttpRequest();
+                var xhr = new XMLHttpRequest()
                 xhr.open('GET', FormUrlInput.value, true);
-                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); // << rajout
+                //xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); // << rajout
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState == 4) {
                             switch(xhr.status) {
                             case 200 :
-                                    console.log('ok Le fichier existe !')
-                                    console.groupCollapsed('>xhr.responseText')
-                                    console.log(xhr.responseText)
-                                    console.log(xhr.response)
-                                    console.groupEnd()
-                                    // STOP ICI
-                                    //console.log(xhr.responseText[0])
+                                    // if (CL) console.log('ok Le fichier existe !')
+                                    
+                                    let killerdiv = document.querySelector('#ArbolTree')
+                                    if (killerdiv) {killerdiv.remove()}
+
+                                    // thx Rémi
+                                    monObject.mydata.mescases = []
+                                    const maVar = new DOMParser().parseFromString(xhr.responseText, "text/html");
+                                    monObject.Arbol = maVar.body
+                                    monObject.ParsingBody(0,monObject.Arbol,0,0);
+                                    // document.head.prepend(monObject.InjectionCss())
+                                    document.body.prepend(monObject.injectionhtml())
+
+                                    monObject.RemakeBody(monObject.mydata.mescases)
+                                    monObject.InjectionFullScreen()
+                                    monObject.InjectionFooter()
+
+
+                                 
 
 
 
@@ -317,17 +332,8 @@ monObject.InjectionFooter = function() {
 
 
 
-                                var objdOm = JSON.parse(xhr.responseText) // << bug
-                                var zeBody= objdOm.body
-                                var NewBody = zeBody.children
-                                // Merci -> https://www.xul.fr/ajax/responseHTML.txt
-                                // je creuse https://stackoverflow.com/questions/24546483/how-to-get-data-field-from-xhr-responsetext
-                                // je creuse https://stackoverflow.com/questions/56694946/how-can-i-parse-an-html-response-text-of-an-xmlhttprequest-using-js
-                                // je creuse https://developer.mozilla.org/fr/docs/Web/API/XMLHttpRequest/response
 
-                                //  encore https://expressjs.com/en/resources/middleware/body-parser.html
-                                // https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/JSON/parse
-                                // https://stackoverflow.com/questions/24202628/parsing-json-response-to-get-body-from-html
+
                             break;
                             case 404 :
                                 console.log('404 ! Sans dec...')
@@ -340,7 +346,7 @@ monObject.InjectionFooter = function() {
                         console.log("je retente...")
                     }
                 };
-                xhr.send(null);
+                xhr.send();
             }else{
                 console.log('bug : ' + FormUrlInput.ATTRIBUTE_NODE)
             }
@@ -371,6 +377,7 @@ monObject.InjectionFullScreen = function() {
         'click',
         function fullscreen(e){
             let Skreen = document.querySelector('#TreeDiv')
+            Skreen.activated = true
             if (!Skreen.activated) {
                 // on passe en full screen
                 Skreen.style.width = '100%'
@@ -497,5 +504,16 @@ monObject.tags = {
     UL:         {type: 'ul',bgcolor:'rgba(247,7,120,'+charte.transp+')',color:'rgba(0,0,255,.5)',contenu:'ul',bgcolor:'rgba(8,248,135,'+charte.transp+')'},
     VAR:        {type: 'var',bgcolor:'rgba(250,5,122,'+charte.transp+')',color:'rgba(0,0,255,.5)',contenu:'var',bgcolor:'rgba(5,250,133,'+charte.transp+')'},
     VIDEO:      {type: 'video',bgcolor:'rgba(252,2,380,'+charte.transp+')',color:'rgba(0,0,255,.5)',contenu:'video<br>new',bgcolor:'rgba(3,253,-125,'+charte.transp+')'},
-    WBR:        {type: 'wbr',bgcolor:'rgba(255,0,127,'+charte.transp+')',color:'rgba(0,0,255,.5)',contenu:'wbr<br>new',bgcolor:'rgba(0,255,128,'+charte.transp+')'}
+    WBR:        {type: 'wbr',bgcolor:'rgba(255,0,127,'+charte.transp+')',color:'rgba(0,0,255,.5)',contenu:'wbr<br>new',bgcolor:'rgba(0,255,128,'+charte.transp+')'},
+    //for google.fr
+    CENTER:        {type: 'center',bgcolor:'rgba(255,0,127,'+charte.transp+')',color:'rgba(0,0,255,.5)',contenu:'center',bgcolor:'rgba(0,255,128,'+charte.transp+')'},
+    svg:        {type: 'svg',bgcolor:'rgba(255,0,127,'+charte.transp+')',color:'rgba(0,0,255,.5)',contenu:'svg',bgcolor:'rgba(0,255,128,'+charte.transp+')'},
+    'G-LOADING-ICON':        {type: 'G-LOADING-ICON',bgcolor:'rgba(255,0,127,'+charte.transp+')',color:'rgba(0,0,255,.5)',contenu:'G-LOADING-ICON',bgcolor:'rgba(0,255,128,'+charte.transp+')'},
+    'G-DIALOG':        {type: 'G-DIALOG',bgcolor:'rgba(255,0,127,'+charte.transp+')',color:'rgba(0,0,255,.5)',contenu:'G-DIALOG',bgcolor:'rgba(0,255,128,'+charte.transp+')'},
+    'G-FLAT-BUTTON':        {type: 'G-FLAT-BUTTON',bgcolor:'rgba(255,0,127,'+charte.transp+')',color:'rgba(0,0,255,.5)',contenu:'G-FLAT-BUTTON',bgcolor:'rgba(0,255,128,'+charte.transp+')'},
+    'G-RAISED-BUTTON':        {type: 'G-RAISED-BUTTON',bgcolor:'rgba(255,0,127,'+charte.transp+')',color:'rgba(0,0,255,.5)',contenu:'G-RAISED-BUTTON',bgcolor:'rgba(0,255,128,'+charte.transp+')'},
+    path:        {type: 'path',bgcolor:'rgba(0,0,0,'+charte.transp+')',color:'rgba(255,255,255,.5)',contenu:'path',bgcolor:'rgba(0,255,128,'+charte.transp+')'}
+
+
+
 }
