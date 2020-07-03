@@ -1,0 +1,16 @@
+body{
+    padding: 0px;
+    margin: 0px;
+}
+*{
+    padding: 0px;
+    margin: 0px;
+    text-decoration: none;
+    list-style:none;
+}
+.container div {
+    background-color: rgba(0, 81, 255, 0.336);
+    /* width: max-content; */
+    padding: 5px;
+    margin: 0px;
+}
