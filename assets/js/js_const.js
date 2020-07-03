@@ -6,16 +6,14 @@ const charte = {
     max_y:0,
     rooturl: '',
     imageurl: '',
-    fullscreenimg: 'img/fullscreen.svg',
-    normalscreenimg: 'img/normalscreen.svg',
-    logo: 'img/treeup.svg',
+    fullscreenimg: 'assets/img/fullscreen.svg',
+    normalscreenimg: 'assets/img/normalscreen.svg',
+    logo: 'assets/img/treeup.svg',
     logoW: '25', // px
     logoH: '25', // px
     logoAlt: "Image d'un arbre tête en bas",
     //fullscreen button
     fstimehover: .4,
-    fullscreenimg: 'img/fullscreen.svg',
-    normalscreenimg: 'normalscreen.svg',
     titleoff: 'Mode Plein écran',
     titleon: 'Mode normal',
     fssize: '25', // px

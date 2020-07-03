@@ -1,4 +1,4 @@
-
+"use strict";
 // ----------------------------------------------- TRIER, REDUIRE +
 monObject.injectionhtml = function() {
     var ArbolTree = document.createElement('div')                           // div surcouche 
@@ -23,7 +23,7 @@ monObject.InjectionFooter = function() {
     inputfooter.placeholder = charte.placeholder
     inputfooter.value = monObject.mydata.urlinput
     // ---------------------------------------------------------
-    var submitfooter = document.createElement('div')                                 // un div pour fair le submit ?
+    var submitfooter = document.createElement('div')                       // un div pour fair le submit ?
     //submitfooter.type = 'submit'
     submitfooter.id = charte.submitid
     submitfooter.className = charte.submitclass
@@ -32,23 +32,17 @@ monObject.InjectionFooter = function() {
         'click',
         function soumission(e){
             var FormUrlInput = document.querySelector('#'+charte.inputid)
-            // if (CL) console.log(charte.inputid)
             // patch secu needed to reg(FormUrlInput)
             if (FormUrlInput.value && FormUrlInput.value!='') {
                 console.log('Go xhr avec : ' + FormUrlInput.value)
                 var xhr = new XMLHttpRequest()
-                
                 xhr.open('GET', FormUrlInput.value, true);
                 //xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); // << rajout
-                
                 if ('withCredentials' in xhr) {
                     xhr.onreadystatechange = function() {
                         if (xhr.readyState == 4) {
                                 switch(xhr.status) {
                                 case 200 :
-
-
-
                                         if (CL) console.log('ok !')    
                                         monObject.mydata.urlinput = FormUrlInput.value                                
                                         monObject.clear() // si le div existe on le vire
@@ -61,24 +55,18 @@ monObject.InjectionFooter = function() {
                                         
                                         monObject.Arbol = maVar.body
                                         monObject.ParsingBody(0,monObject.Arbol,0,0);
-                                        // document.head.prepend(monObject.InjectionCss())
-                                    // document.body.prepend(monObject.injectionhtml())
-
                                         monObject.RemakeBody(monObject.mydata.mescases)
                                         //monObject.InjectionFullScreen()
 
                                         monObject.InjectionFooter()
                                         monObject.mydata.CleardBody = true
                                         console.log('charte.max_x:'+charte.max_x)
-
-
-
                                 break;
                                 case 404 :
-                                    console.log('404 ! Sans dec...')
+                                    // console.log('404 ! Sans dec...')
                                 break;
                                 case 402 :
-                                    console.log("Y'a un truc louche !")
+                                    // console.log("Y'a un truc louche !")
                                 break;
                             }
                         } else {
@@ -88,7 +76,7 @@ monObject.InjectionFooter = function() {
                 };
                 xhr.send();
             }else{
-                console.log('bug : ' + FormUrlInput.ATTRIBUTE_NODE)
+                // console.log('bug : ' + FormUrlInput.ATTRIBUTE_NODE)
             }
         }//,{once:true}
     )

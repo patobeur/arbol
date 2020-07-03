@@ -1,4 +1,4 @@
-"use strict";
+
 window.onload = function () {
     //monObject.Arbol = document.body.children
     //monObject.ParsingBody(0,document.body,0,0);
